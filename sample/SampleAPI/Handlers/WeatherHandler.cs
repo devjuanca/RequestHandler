@@ -1,9 +1,8 @@
-﻿using RequestHandlers.Request;
-using SampleAPI.Responses;
+﻿using SampleAPI.Responses;
 
 namespace SampleAPI.Handlers;
 
-public class WeatherHandler : RequestHandlers<WeatherForecast[]>
+public class WeatherHandler : RequestHandler<WeatherForecast[]>
 {
     public readonly string[] summaries =
         [

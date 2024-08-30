@@ -1,14 +1,14 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace RequestHandlers.Request
+namespace EasyRequestHandler.Request
 {
     /// <summary>
     /// Represents a base class for request handlers that handle requests with a specified request and response type.
     /// </summary>
     /// <typeparam name="TRequest">The type of the request.</typeparam>
     /// <typeparam name="TResponse">The type of the response.</typeparam>
-    public abstract class RequestHandlers<TRequest, TResponse> : BaseHandler
+    public abstract class RequestHandler<TRequest, TResponse> : BaseHandler
     {
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace RequestHandlers.Request
     /// Represents a base class for request handlers that handle requests without a specific request type, only a response type.
     /// </summary>
     /// <typeparam name="TResponse">The type of the response.</typeparam>
-    public abstract class RequestHandlers<TResponse> : BaseHandler
+    public abstract class RequestHandler<TResponse> : BaseHandler
     {
         /// <summary>
         /// Handles the request asynchronously and returns a response.

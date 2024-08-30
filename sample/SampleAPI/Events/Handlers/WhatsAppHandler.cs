@@ -1,6 +1,4 @@
-﻿using RequestHandlers.Events.Services;
-
-namespace SampleAPI.Events.Handlers;
+﻿namespace SampleAPI.Events.Handlers;
 
 public class WhatsAppHandler(ILogger<WhatsAppHandler> logger) : IEventHandler<NotificationEvent>
 {

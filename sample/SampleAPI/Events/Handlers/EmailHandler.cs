@@ -1,6 +1,4 @@
-﻿using RequestHandlers.Events.Services;
-
-namespace SampleAPI.Events.Handlers;
+﻿namespace SampleAPI.Events.Handlers;
 
 public class EmailHandler(ILogger<EmailHandler> logger) : IEventHandler<NotificationEvent>
 {

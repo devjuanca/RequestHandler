@@ -1,5 +1,4 @@
 ﻿using RequestHandlers.Common;
-using RequestHandlers.Events.Services;
 namespace SampleAPI.Events.Handlers;
 
 [HandlerLifetime(ServiceLifetime.Singleton)]

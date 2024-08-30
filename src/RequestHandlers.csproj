@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
 	  <PackageId>EasyRequestHandler</PackageId>
 	<Authors>Juan Carlos Torres Cuervo</Authors>
-	 <Description>RequestHandlers is a lightweight .NET library designed to simplify event and request handling.</Description>
+	 <Description>EasyRequestHandler is a lightweight .NET library designed to simplify event and request handling.</Description>
 	<VersionPrefix>1.0.0</VersionPrefix>
 	<PackageTags>.net, events, request-handlers</PackageTags>
 	<PackageProjectUrl>https://github.com/devjuanca/RequestHandler</PackageProjectUrl>

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace RequestHandlers.Events.Services
+namespace EasyRequestHandler.Events
 {
     /// <summary>
     /// Provides methods for publishing events to registered handlers.

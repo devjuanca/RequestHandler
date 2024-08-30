@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RequestHandlers.Common;
-using RequestHandlers.Events.Services;
 using System;
 using System.Linq;
 using System.Reflection;
 
-namespace RequestHandlers.Events
+namespace EasyRequestHandler.Events
 {
 
     /// <summary>

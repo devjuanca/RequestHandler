@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace RequestHandlers.Request
+namespace EasyRequestHandler.Request
 {
     /// <summary>
     /// Provides extension methods to register request handlers into the dependency injection container.
