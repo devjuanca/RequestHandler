@@ -1,4 +1,4 @@
-# RequestHandlers
+# Easy Request Handler
 
 RequestHandlers is a lightweight .NET library designed to simplify event and request handling. It integrates seamlessly with the .NET Dependency Injection (DI) system and supports asynchronous operations, making it ideal for building event-driven architectures and modular applications.
 
