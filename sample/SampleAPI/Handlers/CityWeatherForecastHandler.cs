@@ -18,7 +18,7 @@ public class CityWeatherForecastHandler : RequestHandler<string, WeatherForecast
            ("London", "Scorching")
        ];
 
-    public override async ValueTask<WeatherForecast[]> HandleAsync(string cityName, CancellationToken cancellationToken = default)
+    public override async Task<WeatherForecast[]> HandleAsync(string cityName, CancellationToken cancellationToken = default)
     {
         var sumaries = summaries.Where(a => a.City.Equals(cityName, StringComparison.OrdinalIgnoreCase))
             .Select(a => a.Weather)

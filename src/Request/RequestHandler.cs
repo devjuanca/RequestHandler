@@ -17,7 +17,7 @@ namespace EasyRequestHandler.Request
         /// <param name="request">The request to be handled.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task representing the asynchronous operation, with a response of type <typeparamref name="TResponse"/>.</returns>
-        public abstract ValueTask<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken = default);
+        public abstract Task<TResponse> HandleAsync(TRequest request, CancellationToken cancellationToken = default);
     }
 
 
@@ -32,6 +32,6 @@ namespace EasyRequestHandler.Request
         /// </summary>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task representing the asynchronous operation, with a response of type <typeparamref name="TResponse"/>.</returns>
-        public abstract ValueTask<TResponse> HandleAsync(CancellationToken cancellationToken = default);
+        public abstract Task<TResponse> HandleAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -9,7 +9,7 @@ public class WeatherHandler : RequestHandler<WeatherForecast[]>
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         ];
 
-    public override async ValueTask<WeatherForecast[]> HandleAsync(CancellationToken cancellationToken = default)
+    public override async Task<WeatherForecast[]> HandleAsync(CancellationToken cancellationToken = default)
     {
         var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
