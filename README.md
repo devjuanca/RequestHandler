@@ -16,7 +16,7 @@ RequestHandlers is a lightweight .NET library designed to simplify event and req
 To install RequestHandlers, run the following command in your NuGet Package Manager Console:
 
 ```sh
-Install-Package RequestHandlers
+Install-Package EasyRequestHandler
 ```
 
 ## Usage
