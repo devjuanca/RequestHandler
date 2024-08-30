@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CustomMediator.csproj" />
+    <ProjectReference Include="..\..\src\RequestHandlers.csproj" />
   </ItemGroup>
 
 </Project>

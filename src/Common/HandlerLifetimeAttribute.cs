@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace CustomMediator
+namespace RequestHandlers.Common
 {
 
     [AttributeUsage(AttributeTargets.Class)]
-    internal class HandlerLifetimeAttribute : Attribute
+    public class HandlerLifetimeAttribute : Attribute
     {
         public ServiceLifetime Lifetime { get; }
 

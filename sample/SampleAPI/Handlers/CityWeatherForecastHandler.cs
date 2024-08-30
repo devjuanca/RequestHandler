@@ -1,9 +1,9 @@
-﻿using CustomMediator;
+﻿using RequestHandlers.Request;
 using SampleAPI.Responses;
 
 namespace SampleAPI.Handlers;
 
-public class CityWeatherForecastHandler : RequestHandler<string, WeatherForecast[]>
+public class CityWeatherForecastHandler : RequestHandlers<string, WeatherForecast[]>
 {
     public readonly (string City, string Weather)[] summaries =
        [
@@ -15,8 +15,8 @@ public class CityWeatherForecastHandler : RequestHandler<string, WeatherForecast
            ("London", "Warm"),
            ( "London", "Balmy"),
            ("London", "Hot"),
-           ( "London", "Sweltering"),
-           ( "London", "Scorching")
+           ("London", "Sweltering"),
+           ("London", "Scorching")
        ];
 
     public override async ValueTask<WeatherForecast[]> HandleAsync(string cityName, CancellationToken cancellationToken = default)

@@ -1,9 +1,9 @@
-﻿using CustomMediator;
+﻿using RequestHandlers.Request;
 using SampleAPI.Responses;
 
 namespace SampleAPI.Handlers;
 
-public class WeatherHandler : RequestHandler<WeatherForecast[]>
+public class WeatherHandler : RequestHandlers<WeatherForecast[]>
 {
     public readonly string[] summaries =
         [
