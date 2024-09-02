@@ -100,10 +100,10 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         // Register event handlers
-        services.RegisterEventsHandlers(typeof(MyEventHandler).Assembly);
+        services.AddEventsHandlers(typeof(MyEventHandler).Assembly);
 
         // Register request handlers
-        services.AddRequestHandlers(typeof(MyRequestHandler).Assembly);
+        services.AddRequestsHandlers(typeof(MyRequestHandler).Assembly);
     }
 }
 

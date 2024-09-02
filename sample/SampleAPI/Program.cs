@@ -7,9 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<WeatherForecastRepository>();
 
-builder.Services.AddRequestHandlers(typeof(Program));
+builder.Services.AddRequestsHandlers(typeof(Program));
 
-builder.Services.RegisterEventsHandlers(typeof(Program));
+builder.Services.AddEventsHandlers(typeof(Program));
 
 var app = builder.Build();
 

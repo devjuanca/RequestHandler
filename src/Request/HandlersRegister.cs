@@ -19,7 +19,7 @@ namespace EasyRequestHandler.Request
         /// <param name="services">The <see cref="IServiceCollection"/> to which the request handlers will be added.</param>
         /// <param name="assemblyTypes">An array of types used to identify the assemblies containing request handlers.</param>
         /// <returns>The modified <see cref="IServiceCollection"/> containing the registered request handlers.</returns>
-        public static IServiceCollection AddRequestHandlers(this IServiceCollection services, params Type[] assemblyTypes)
+        public static IServiceCollection AddRequestsHandlers(this IServiceCollection services, params Type[] assemblyTypes)
         {
             var handlers = new List<Type>();
 
