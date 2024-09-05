@@ -1,4 +1,4 @@
-﻿namespace EasyRequestHandler.Request
+﻿namespace EasyRequestHandlers.Request
 {
     /// <summary>
     /// Represents the base class for all request handlers.

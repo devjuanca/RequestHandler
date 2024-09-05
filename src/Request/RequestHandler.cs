@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace EasyRequestHandler.Request
+namespace EasyRequestHandlers.Request
 {
     /// <summary>
     /// Represents a base class for request handlers that handle requests with a specified request and response type.

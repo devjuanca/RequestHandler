@@ -1,4 +1,6 @@
-﻿namespace SampleAPI.Events.Handlers;
+﻿using SampleAPI.Events.Notification;
+
+namespace SampleAPI.Events.Notification.Handlers;
 
 public class WhatsAppHandler(ILogger<WhatsAppHandler> logger) : IEventHandler<NotificationEvent>
 {

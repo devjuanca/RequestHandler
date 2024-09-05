@@ -4,7 +4,7 @@ RequestHandlers is a lightweight .NET library designed to simplify event and req
 
 ## Features
 
-- **Event Handling**: Define and manage event handlers using the `IEventHandler<TEvent>` interface. Publish events to all registered handlers using the `IEventPublisher`.
+- **Event Handling**: Define and manage event handlers using the `IEventHandler<TEvent>` or `ITransactionalEventHandler<TEvent>` interfaces. Publish events to all registered handlers using the `IEventPublisher`.
 - **Request Handling**: Create and manage request handlers using the `RequestHandler<TRequest, TResponse>` and `RequestHandlers<TResponse>` base classes.
 - **Dependency Injection**: Automatically register your event and request handlers with the built-in extension methods for `IServiceCollection`.
 - **Customizable Service Lifetimes**: Use the `HandlerLifetimeAttribute` to specify the desired service lifetime (Singleton, Scoped, Transient) for your handlers.
@@ -40,30 +40,45 @@ public class MyEventHandler : IEventHandler<MyEvent>
 }
 ```
 
-2. Publishing Events
+3. Defining Event Transactional Handlers
 
-To publish events, use the `IEventPublisher`:
+To define an transactional event handler, use the `ITransactionalEventHandler<TEvent>` interface
 
-```csharp
-public class MyService
+``` csharp
+public class MyEvent
 {
-    private readonly IEventPublisher _eventPublisher;
-
-    public MyService(IEventPublisher eventPublisher)
-    {
-        _eventPublisher = eventPublisher;
-    }
-
-    public async Task PublishMyEvent()
-    {
-        var myEvent = new MyEvent { Message = "Hello, World!" };
-        await _eventPublisher.PublishAsync(myEvent);
-    }
+    public string Message { get; set; }
 }
 
+public class MyEventHandler : ITransactionalEventHandler<MyEvent>
+{
+    public int Order { get; } = 0;
+
+    public Task HandleAsync(MyEvent @event, CancellationToken cancellationToken)
+    {
+        Console.WriteLine(@event.Message);
+        return Task.CompletedTask;
+    }
+
+    public Task CommitAsync(MyEvent @event, CancellationToken cancellationToken)
+    {
+        // Add logic to persist or commit changes here
+        return Task.CompletedTask;
+    }
+
+    public Task RollbackAsync(MyEvent @event, CancellationToken cancellationToken)
+    {
+        // Add logic to undo changes here
+        return Task.CompletedTask;
+    }
+}
 ```
 
-3. Defining Request Handlers
+Note: Transactional Events will be executed ordered by the Order property. 
+
+An event can have both transactional and non-transactional handlers.
+
+4. Defining Request Handlers
 
 To define a request handler, inherit from `RequestHandler<TRequest, TResponse>` or `RequestHandler<TResponse>`:
 
@@ -89,7 +104,7 @@ public class MyRequestHandler : RequestHandlers<MyRequest, MyResponse>
 
 ```
 
-4. Registering Handlers with Dependency Injection
+5. Registering Handlers with Dependency Injection
 
 To register your event and request handlers with the DI container, use the provided extension methods:
 
@@ -109,7 +124,7 @@ public class Startup
 
 ```
 
-5. Configuring Service Lifetimes
+6. Configuring Service Lifetimes
 
 Use the HandlerLifetimeAttribute to configure the lifetime of your handlers (both types events or requests):
 

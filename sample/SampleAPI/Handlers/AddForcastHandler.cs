@@ -3,9 +3,9 @@ using SampleAPI.Repository;
 
 namespace SampleAPI.Handlers;
 
-public class AddForcastHandler(WeatherForecastRepository weatherForecast) : RequestHandler<AddCityForecastCommand, Empty>
+public class AddForcastHandler(WeatherForecastRepository weatherForecast) : RequestHandler<CreateCityForecastCommand, Empty>
 {
-    public override Task<Empty> HandleAsync(AddCityForecastCommand request, CancellationToken cancellationToken = default)
+    public override Task<Empty> HandleAsync(CreateCityForecastCommand request, CancellationToken cancellationToken = default)
     {
         weatherForecast.Add(request.City, request.WeatherForecast);
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace RequestHandlers.Common
+namespace EasyRequestHandlers.Common
 {
 
     [AttributeUsage(AttributeTargets.Class)]

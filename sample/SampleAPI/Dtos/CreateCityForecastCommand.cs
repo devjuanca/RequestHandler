@@ -1,6 +1,6 @@
 ﻿namespace SampleAPI.Dtos;
 
-public class AddCityForecastCommand
+public class CreateCityForecastCommand
 {
     public required string City { get; set; }
 

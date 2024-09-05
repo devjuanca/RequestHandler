@@ -1,5 +1,5 @@
-﻿using RequestHandlers.Common;
-namespace SampleAPI.Events.Handlers;
+﻿using SampleAPI.Events.Notification;
+namespace SampleAPI.Events.Notification.Handlers;
 
 [HandlerLifetime(ServiceLifetime.Singleton)]
 public class SmsHandler(ILogger<SmsHandler> logger) : IEventHandler<NotificationEvent>

@@ -1,4 +1,7 @@
-﻿namespace SampleAPI.Events.Handlers;
+﻿using EasyRequestHandlers.Events;
+using SampleAPI.Events.Notification;
+
+namespace SampleAPI.Events.Notification.Handlers;
 
 public class EmailHandler(ILogger<EmailHandler> logger) : IEventHandler<NotificationEvent>
 {

@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using RequestHandlers.Common;
+﻿using EasyRequestHandlers.Common;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace EasyRequestHandler.Request
+namespace EasyRequestHandlers.Request
 {
     /// <summary>
     /// Provides extension methods to register request handlers into the dependency injection container.

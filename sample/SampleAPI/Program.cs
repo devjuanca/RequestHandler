@@ -1,5 +1,6 @@
 using SampleAPI.Dtos;
-using SampleAPI.Events;
+using SampleAPI.Events.CreateCityForcastEvent;
+using SampleAPI.Events.Notification;
 using SampleAPI.Handlers;
 using SampleAPI.Repository;
 
@@ -36,9 +37,14 @@ app.MapGet("/weatherforecast/{city}", async (string city, CityForecastHandler ha
 });
 
 
-app.MapPost("/weatherforecast", async (AddCityForecastCommand command, AddForcastHandler handler, CancellationToken cancellationToken) =>
+app.MapPost("/weatherforecast", async (CreateCityForecastCommand command, AddForcastHandler handler, IEventPublisher publisher, CancellationToken cancellationToken) =>
 {
     await handler.HandleAsync(command, cancellationToken);
+
+    await publisher.PublishAsync(new CreateCityForcastEvent
+    {
+        City = command.City
+    }, cancellationToken: cancellationToken);
 
     return Results.StatusCode(201);
 });

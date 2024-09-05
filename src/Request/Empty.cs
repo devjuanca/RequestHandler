@@ -1,4 +1,4 @@
-﻿namespace EasyRequestHandler.Request
+﻿namespace EasyRequestHandlers.Request
 {
     /// <summary>
     /// Represents an empty response or a no-result scenario, commonly used as a return type for handlers that do not produce a value. 

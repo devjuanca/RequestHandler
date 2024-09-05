@@ -1,2 +1,3 @@
-﻿global using EasyRequestHandler.Events;
-global using EasyRequestHandler.Request;
+﻿global using EasyRequestHandlers.Common;
+global using EasyRequestHandlers.Events;
+global using EasyRequestHandlers.Request;

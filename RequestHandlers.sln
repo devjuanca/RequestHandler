@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{11F21827-A24
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{1EB689C1-9040-4338-AD3C-D5C7E3B78038}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RequestHandlers", "src\RequestHandlers.csproj", "{56750994-7F73-4D9A-BCE0-0F5837BBC32C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyRequestHandlers", "src\EasyRequestHandlers.csproj", "{56750994-7F73-4D9A-BCE0-0F5837BBC32C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleAPI", "sample\SampleAPI\SampleAPI.csproj", "{26B8309F-EF63-4C0B-A6C2-D818EB8C88A8}"
 EndProject
