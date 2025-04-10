@@ -33,8 +33,8 @@ jobs:
       uses: actions/setup-dotnet@v3
 
     # Create the NuGet package in the folder from the environment variable NuGetDirectory
-   #- name: Restore NuGet packages
-   #  run: dotnet restore
+    - name: Restore NuGet packages
+      run: dotnet restore
 
     - name: Build EasyRequestHandler
       run: dotnet build src/RequestHandlers.csproj --configuration Release
