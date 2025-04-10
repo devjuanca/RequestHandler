@@ -18,7 +18,7 @@ namespace EasyRequestHandlers.Events
         /// <param name="services">The <see cref="IServiceCollection"/> to which the event handlers will be added.</param>
         /// <param name="assemblyTypes">An array of types used to identify the assemblies containing event handlers.</param>
         /// <returns>The modified <see cref="IServiceCollection"/> containing the registered event handlers.</returns>
-        public static IServiceCollection AddEventsHandlers(this IServiceCollection services, params Type[] assemblyTypes)
+        public static IServiceCollection AddEasyEventHandlers(this IServiceCollection services, params Type[] assemblyTypes)
         {
 
             foreach (var type in assemblyTypes)

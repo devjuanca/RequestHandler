@@ -1,3 +1,4 @@
+using SampleAPI.Behaviours;
 using SampleAPI.Dtos;
 using SampleAPI.Events.CreateCityForcastEvent;
 using SampleAPI.Events.Notification;
@@ -8,14 +9,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<WeatherForecastRepository>();
 
-builder.Services.AddRequestsHandlers(typeof(Program));
+builder.Services.AddEasyRequestHandlers(typeof(Program))
+                .WithMediatorPattern()
+                .WithBehaviours(
+                    typeof(LoggingBehaviour<,>),
+                    typeof(AuthenticationBehaviour<,>),
+                    typeof(ValidationBehaviour<,>)
+                    )
+                .WithRequestHooks()
+                .Build();
 
-builder.Services.AddEventsHandlers(typeof(Program));
+
+builder.Services.AddEasyEventHandlers(typeof(Program));
 
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-
 
 //REQUEST HANDLERS
 
@@ -24,10 +33,9 @@ app.MapGet("/weatherforecast", async (CitiesForcastHandler handler, Cancellation
     return await handler.HandleAsync(cancellationToken);
 });
 
-
-app.MapGet("/weatherforecast/{city}", async (string city, CityForecastHandler handler, CancellationToken cancellationToken) =>
+app.MapGet("/weatherforecast/{city}", async (string city, ISender sender, CancellationToken cancellationToken) =>
 {
-    var result = await handler.HandleAsync(city, cancellationToken);
+    var result = await sender.SendAsync<string, WeatherForecast?>(city, cancellationToken: cancellationToken);
 
     return result switch
     {
@@ -36,10 +44,9 @@ app.MapGet("/weatherforecast/{city}", async (string city, CityForecastHandler ha
     };
 });
 
-
-app.MapPost("/weatherforecast", async (CreateCityForecastCommand command, AddForcastHandler handler, IEventPublisher publisher, CancellationToken cancellationToken) =>
+app.MapPost("/weatherforecast", async (CreateCityForecastCommand command, ISender sender, IEventPublisher publisher, CancellationToken cancellationToken) =>
 {
-    await handler.HandleAsync(command, cancellationToken);
+    await sender.SendAsync<CreateCityForecastCommand, Empty>(command, cancellationToken);
 
     await publisher.PublishAsync(new CreateCityForcastEvent
     {
@@ -48,8 +55,6 @@ app.MapPost("/weatherforecast", async (CreateCityForecastCommand command, AddFor
 
     return Results.StatusCode(201);
 });
-
-
 
 // EVENTS HANDLER
 
@@ -61,4 +66,3 @@ app.MapPost("/notification", async (NotificationEvent @event, IEventPublisher pu
 });
 
 app.Run();
-

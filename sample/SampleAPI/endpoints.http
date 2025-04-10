@@ -4,7 +4,7 @@ GET {{SampleAPI_HostAddress}}/weatherforecast
 
 ###
 
-GET {{SampleAPI_HostAddress}}/weatherforecast/London
+GET {{SampleAPI_HostAddress}}/weatherforecast/Paris
 
 ###
 
@@ -12,10 +12,10 @@ POST {{SampleAPI_HostAddress}}/weatherforecast
 Content-Type: application/json
 
 {
-  "city": "Berlin",
+  "city": "",
   "weatherForecast":{
     "Date": "2024-08-30",
-    "TemperatureC": 25,
+    "TemperatureC": 55,
     "Summary": "Partly Cloudy"
   }
 }
