@@ -38,17 +38,18 @@ namespace EasyRequestHandlers.Request
 
             var behaviors = _serviceProvider.GetServices<IPipelineBehaviour<TRequest, TResponse>>()
                                             .Reverse()
-                                            .ToList();
-            List<IRequestHook<TRequest, TResponse>> hooks = new List<IRequestHook<TRequest, TResponse>>();
+                                            .ToArray();
+
+            IReadOnlyList<IRequestHook<TRequest, TResponse>> hooks = null;
 
             if (_options.EnableRequestHooks)
             {
-                hooks = _serviceProvider.GetServices<IRequestHook<TRequest, TResponse>>().ToList();
+                hooks = _serviceProvider.GetServices<IRequestHook<TRequest, TResponse>>().ToArray();
             }
 
             RequestHandlerDelegate<TResponse> handlerDelegate = async () =>
             {
-                if (_options.EnableRequestHooks)
+                if (_options.EnableRequestHooks && hooks.Count > 0)
                 {
                     foreach (var hook in hooks)
                     {
@@ -58,7 +59,7 @@ namespace EasyRequestHandlers.Request
 
                 var response = await handler.HandleAsync(request, cancellationToken);
 
-                if (_options.EnableRequestHooks)
+                if (_options.EnableRequestHooks && hooks.Count > 0)
                 {
                     foreach (var hook in hooks)
                     {
@@ -69,11 +70,14 @@ namespace EasyRequestHandlers.Request
                 return response;
             };
 
-            foreach (var behavior in behaviors)
+            if (behaviors.Length > 0)
             {
-                var next = handlerDelegate;
+                foreach (var behavior in behaviors)
+                {
+                    var next = handlerDelegate;
 
-                handlerDelegate = () => behavior.Handle(request, cancellationToken, next);
+                    handlerDelegate = () => behavior.Handle(request, cancellationToken, next);
+                }
             }
 
             return handlerDelegate();
