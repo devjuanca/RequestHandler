@@ -31,7 +31,7 @@ jobs:
 
     # Install the .NET SDK indicated in the global.json file
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
 
     # Create the NuGet package in the folder from the environment variable NuGetDirectory
    #- name: Restore NuGet packages
