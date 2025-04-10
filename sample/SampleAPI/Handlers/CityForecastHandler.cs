@@ -10,3 +10,11 @@ public class CityForecastHandler(WeatherForecastRepository forecastRepository) :
         return Task.FromResult(forecastRepository.Get(cityName));
     }
 }
+
+//public class CityForecast2Handler(WeatherForecastRepository forecastRepository) : RequestHandler<string, WeatherForecast?>
+//{
+//    public override Task<WeatherForecast?> HandleAsync(string cityName, CancellationToken cancellationToken = default)
+//    {
+//        return Task.FromResult(forecastRepository.Get(cityName));
+//    }
+//}
