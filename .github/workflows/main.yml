@@ -37,7 +37,7 @@ jobs:
    #- name: Restore NuGet packages
    #  run: dotnet restore
 
-    - name: Build EasyRabbitFlow
+    - name: Build EasyRequestHandler
       run: dotnet build src/RequestHandlers.csproj --configuration Release
 
     - name: Create NuGet package
