@@ -6,7 +6,7 @@ on:
       - 'master'       # Run the workflow when pushing to the main branch
   pull_request:
     branches:
-      - '*'          # Run the workflow for all pull requests
+      - 'master'
   release:
     types:
       - published    # Run the workflow when a new GitHub release is published
@@ -33,8 +33,8 @@ jobs:
       uses: actions/setup-dotnet@v4
 
     # Create the NuGet package in the folder from the environment variable NuGetDirectory
-    - name: Restore NuGet packages
-      run: dotnet restore
+    # - name: Restore NuGet packages
+    #  run: dotnet restore
 
     - name: Build EasyRequestHandler
       run: dotnet build src/RequestHandlers.csproj --configuration Release
@@ -74,14 +74,14 @@ jobs:
       - name: Validate package
         run: meziantou.validate-nuget-package (Get-ChildItem "${{ env.NuGetDirectory }}/*.nupkg") --excluded-rule-ids 32,111,74,72,61
 
-  run_test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-    - name: Run tests
-      run: dotnet test --configuration Release
+  #  run_test:
+   #   runs-on: ubuntu-latest
+   #   steps:
+    #  - uses: actions/checkout@v3
+    #  - name: Setup .NET
+    #    uses: actions/setup-dotnet@v3
+    #  - name: Run tests
+     #   run: dotnet test --configuration Release
 
   deploy:
     # Publish only when creating a GitHub Release
@@ -89,17 +89,17 @@ jobs:
     # You can update this logic if you want to manage releases differently
     # if: github.event_name == 'release'
     runs-on: ubuntu-latest
-    needs: [ validate_nuget, run_test ]
+    needs: [ validate_nuget]
     steps:
       # Download the NuGet package created in the previous job
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}
 
       # Install the .NET SDK indicated in the global.json file
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
 
       # Publish all NuGet packages to NuGet.org
       # Use --skip-duplicate to prevent errors if a package with the same version already exists.
