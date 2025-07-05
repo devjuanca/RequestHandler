@@ -1,30 +1,175 @@
-# Easy Request Handler
+﻿# Easy Request Handler
 
-RequestHandlers is a lightweight .NET library designed to simplify event and request handling. It integrates seamlessly with the .NET Dependency Injection (DI) system and supports asynchronous operations, making it ideal for building event-driven architectures and modular applications.
+**EasyRequestHandler** is a lightweight and extensible .NET library that simplifies request and event handling using patterns like Mediator and Event Dispatcher. It integrates seamlessly with the .NET Dependency Injection (DI) system and supports asynchronous operations, making it ideal for modular applications and event-driven systems.
 
-## Features
+## ✨ Features
 
-- **Event Handling**: Define and manage event handlers using the `IEventHandler<TEvent>` or `ITransactionalEventHandler<TEvent>` interfaces. Publish events to all registered handlers using the `IEventPublisher`.
-- **Request Handling**: Create and manage request handlers using the `RequestHandler<TRequest, TResponse>` and `RequestHandlers<TResponse>` base classes.
-- **Dependency Injection**: Automatically register your event and request handlers with the built-in extension methods for `IServiceCollection`.
-- **Customizable Service Lifetimes**: Use the `HandlerLifetimeAttribute` to specify the desired service lifetime (Singleton, Scoped, Transient) for your handlers.
-- **Asynchronous Operations**: Leverage async/await patterns for non-blocking event and request processing.
-- **Built-in Logging**: Integrated error handling and logging provide insights into the execution flow.
+- **Mediator Pattern**: Centralizes request handling with support for request pre/post hooks and behaviors (middleware).
+- **Flexible Request Handling**: Use `RequestHandler<TRequest, TResponse>` or `RequestHandler<TResponse>` base classes.
+- **Event Dispatching**: Handle and publish events using `IEventHandler<TEvent>` and `ITransactionalEventHandler<TEvent>`.
+- **Automatic Registration**: Register all handlers with a single method using `IServiceCollection` extensions.
+- **Scoped Lifetimes**: Control handler lifetimes using the `HandlerLifetimeAttribute`.
+- **Async/Await Support**: Built from the ground up for asynchronous code.
+- **Built-in Logging**: Plug-and-play support for structured logging and error tracking.
 
-## Installation
+## 📦 Installation
 
-To install RequestHandlers, run the following command in your NuGet Package Manager Console:
+Install from NuGet using the following command:
 
-```sh
+```
 Install-Package EasyRequestHandler
 ```
 
-## Usage
-1. Defining Event Handlers
+## 🚀 Usage
 
-To define an event handler, implement the IEventHandler<TEvent> interface in your class:
+### 🧭 Request Handling
 
-``` csharp
+#### Basic Request Handlers
+Handlers can be used in two ways:
+
+- **Direct Injection**: Inject the handler class itself (e.g., `MyRequestHandler`) into your controller or service and call `HandleAsync()` directly.
+- **Mediator Pattern**: Use the `ISender` interface to decouple request handling and improve testability and separation of concerns.
+
+Here’s how you could invoke a request using the `ISender` interface:
+
+```csharp
+public class MyApiController : ControllerBase
+{
+    private readonly ISender _sender;
+
+    public MyApiController(ISender sender)
+    {
+        _sender = sender;
+    }
+
+    [HttpGet("double")]
+    public async Task<IActionResult> GetDoubledNumber([FromQuery] int number)
+    {
+        var response = await _sender.SendAsync<MyRequest, MyResponse>(new MyRequest { Number = number });
+        return Ok(response.Result);
+    }
+}
+```
+
+
+Define a request and handler:
+
+```csharp
+public class MyRequest
+{
+    public int Number { get; set; }
+}
+
+public class MyResponse
+{
+    public int Result { get; set; }
+}
+
+public class MyRequestHandler : RequestHandler<MyRequest, MyResponse>
+{
+    public override Task<MyResponse> HandleAsync(MyRequest request, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(new MyResponse { Result = request.Number * 2 });
+    }
+}
+```
+
+For handlers with no input request:
+
+```csharp
+public class WeatherForecastHandler : RequestHandler<List<WeatherForecast>>
+{
+    public override Task<List<WeatherForecast>> HandleAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(GetForecasts());
+    }
+}
+```
+
+#### Mediator Pattern
+
+Use the `ISender` interface to decouple request invocation:
+
+```csharp
+public async Task<IActionResult> GetForecast(string city, ISender sender)
+{
+    var forecast = await sender.SendAsync<string, WeatherForecast>(city);
+    return Ok(forecast);
+}
+```
+
+##### Request Behaviors
+
+Behaviors are middleware for requests:
+
+```csharp
+public class LoggingBehaviour<TRequest, TResponse> : IPipelineBehaviour<TRequest, TResponse>
+{
+    private readonly ILogger<LoggingBehaviour<TRequest, TResponse>> _logger;
+
+    public LoggingBehaviour(ILogger<LoggingBehaviour<TRequest, TResponse>> logger)
+    {
+        _logger = logger;
+    }
+
+    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+    {
+        _logger.LogInformation("Handling {RequestType}", typeof(TRequest).Name);
+        var response = await next();
+        _logger.LogInformation("Handled {RequestType}", typeof(TRequest).Name);
+        return response;
+    }
+}
+```
+
+##### Request Hooks
+
+Use hooks to add pre/post execution logic:
+
+```csharp
+public class MyRequestHook : IRequestHook<MyRequest, MyResponse>
+{
+    public Task OnExecutingAsync(MyRequest request, CancellationToken cancellationToken)
+    {
+        Console.WriteLine("Before handling request");
+        return Task.CompletedTask;
+    }
+
+    public Task OnExecutedAsync(MyRequest request, MyResponse response, CancellationToken cancellationToken)
+    {
+        Console.WriteLine("After handling request");
+        return Task.CompletedTask;
+    }
+}
+```
+
+#### Registration and Configuration
+
+```csharp
+services.AddEasyRequestHandlers(typeof(Program))
+        .WithMediatorPattern()
+        .WithBehaviours(typeof(LoggingBehaviour<,>), typeof(ValidationBehaviour<,>))
+        .WithRequestHooks()
+        .Build();
+```
+
+Minimal API example:
+
+```csharp
+app.MapGet("/weatherforecast", async (WeatherForecastHandler handler) =>
+{
+    return await handler.HandleAsync();
+});
+```
+
+---
+
+### 📣 Event Handling
+A single event can have multiple handlers. All handlers registered for an event will be invoked, and they can run either sequentially or in parallel depending on the event publisher's implementation.
+
+#### Basic Event Handler
+
+```csharp
 public class MyEvent
 {
     public string Message { get; set; }
@@ -40,19 +185,12 @@ public class MyEventHandler : IEventHandler<MyEvent>
 }
 ```
 
-3. Defining Event Transactional Handlers
+#### Transactional Event Handler
 
-To define an transactional event handler, use the `ITransactionalEventHandler<TEvent>` interface
-
-``` csharp
-public class MyEvent
+```csharp
+public class MyTransactionalHandler : ITransactionalEventHandler<MyEvent>
 {
-    public string Message { get; set; }
-}
-
-public class MyEventHandler : ITransactionalEventHandler<MyEvent>
-{
-    public int Order { get; } = 0;
+    public int Order => 0;
 
     public Task HandleAsync(MyEvent @event, CancellationToken cancellationToken)
     {
@@ -60,83 +198,39 @@ public class MyEventHandler : ITransactionalEventHandler<MyEvent>
         return Task.CompletedTask;
     }
 
-    public Task CommitAsync(MyEvent @event, CancellationToken cancellationToken)
-    {
-        // Add logic to persist or commit changes here
-        return Task.CompletedTask;
-    }
+    public Task CommitAsync(MyEvent @event, CancellationToken cancellationToken) =>
+        Task.CompletedTask;
 
-    public Task RollbackAsync(MyEvent @event, CancellationToken cancellationToken)
-    {
-        // Add logic to undo changes here
-        return Task.CompletedTask;
-    }
+    public Task RollbackAsync(MyEvent @event, CancellationToken cancellationToken) =>
+        Task.CompletedTask;
 }
 ```
 
-Note: Transactional Events will be executed ordered by the Order property. 
-
-An event can have both transactional and non-transactional handlers.
-
-4. Defining Request Handlers
-
-To define a request handler, inherit from `RequestHandler<TRequest, TResponse>` or `RequestHandler<TResponse>`:
+#### Publishing Events
 
 ```csharp
-public class MyRequest
+public class MyController
 {
-    public int Number { get; set; }
-}
+    private readonly IEventPublisher _publisher;
 
-public class MyResponse
-{
-    public int Result { get; set; }
-}
-
-public class MyRequestHandler : RequestHandlers<MyRequest, MyResponse>
-{
-    public override ValueTask<MyResponse> HandleAsync(MyRequest request, CancellationToken cancellationToken = default)
+    public MyController(IEventPublisher publisher)
     {
-        var response = new MyResponse { Result = request.Number * 2 };
-        return new ValueTask<MyResponse>(response);
+        _publisher = publisher;
+    }
+
+    public async Task SendNotification(string message)
+    {
+        await _publisher.PublishAsync(new MyEvent { Message = message });
     }
 }
-
 ```
 
-5. Registering Handlers with Dependency Injection
+---
 
-To register your event and request handlers with the DI container, use the provided extension methods:
+## ✅ Summary
 
-```csharp
+EasyRequestHandler provides a clean, extensible way to manage requests and events in .NET, with support for modern patterns like mediator, behaviors, and hooks—all without unnecessary boilerplate.
 
-public class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // Register event handlers
-        services.AddEventsHandlers(typeof(MyEventHandler).Assembly);
+---
 
-        // Register request handlers
-        services.AddRequestsHandlers(typeof(MyRequestHandler).Assembly);
-    }
-}
-
-```
-
-6. Configuring Service Lifetimes
-
-Use the HandlerLifetimeAttribute to configure the lifetime of your handlers (both types events or requests):
-
-```csharp
-[HandlerLifetime(ServiceLifetime.Singleton)]
-public class MySingletonEventHandler : IEventHandler<MyEvent>
-{
-    // Implementation
-}
-
-```
-
-## Sample Project
-
-For more detailed examples and advanced usage, check out the sample project included in the repository. It demonstrates various scenarios and best practices for using the RequestHandlers library in real-world applications.
+Licensed under MIT.

@@ -27,7 +27,6 @@ namespace EasyRequestHandlers.Request
 
         internal static IServiceCollection RegisterHandlers(IServiceCollection services, RequestHandlerOptions options, Type[] assemblyMarkers)
         {
-
             var handlers = new List<Type>();
 
             var handlerKeys = new HashSet<string>();
@@ -104,8 +103,6 @@ namespace EasyRequestHandlers.Request
 
             return services;
         }
-
-
 
         private static string GetHandlerKey(Type type)
         {
