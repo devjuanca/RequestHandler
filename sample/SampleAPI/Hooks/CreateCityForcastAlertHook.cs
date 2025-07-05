@@ -7,7 +7,7 @@ public class CreateCityForcastAlertHook(ILogger<CreateCityForcastAlertHook> logg
 {
     public Task OnExecutingAsync(CreateCityForecastCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Hook Executing. New forcast for city: {city}", request.City);
+        logger.LogInformation("Hook Executing. New forecast for city: {city}", request.City);
 
         if (request.WeatherForecast.TemperatureC < 0)
         {
@@ -16,7 +16,7 @@ public class CreateCityForcastAlertHook(ILogger<CreateCityForcastAlertHook> logg
 
         if (request.WeatherForecast.TemperatureC > 30)
         {
-            logger.LogError("It is gonna be hot!!!");
+            logger.LogWarning("It is gonna be hot!!!");
         }
 
         return Task.CompletedTask;
@@ -24,7 +24,7 @@ public class CreateCityForcastAlertHook(ILogger<CreateCityForcastAlertHook> logg
 
     public Task OnExecutedAsync(CreateCityForecastCommand request, Empty response, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Hook Executed. New forcast for city: {city}", request.City);
+        logger.LogInformation("Hook Executed. New forecast for city: {city}", request.City);
 
         return Task.CompletedTask;
     }

@@ -1,21 +1,21 @@
 @SampleAPI_HostAddress = http://localhost:5254
 
-GET {{SampleAPI_HostAddress}}/weatherforecast
+GET {{SampleAPI_HostAddress}}/weather-forecast
 
 ###
 
-GET {{SampleAPI_HostAddress}}/weatherforecast/Paris
+GET {{SampleAPI_HostAddress}}/weather-forecast/Paris
 
 ###
 
-POST {{SampleAPI_HostAddress}}/weatherforecast
+POST {{SampleAPI_HostAddress}}/weather-forecast
 Content-Type: application/json
 
 {
   "city": "Berlin",
   "weatherForecast":{
     "Date": "2024-08-30",
-    "TemperatureC": 55,
+    "TemperatureC": -10,
     "Summary": "Partly Cloudy"
   }
 }

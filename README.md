@@ -185,27 +185,6 @@ public class MyEventHandler : IEventHandler<MyEvent>
 }
 ```
 
-#### Transactional Event Handler
-
-```csharp
-public class MyTransactionalHandler : ITransactionalEventHandler<MyEvent>
-{
-    public int Order => 0;
-
-    public Task HandleAsync(MyEvent @event, CancellationToken cancellationToken)
-    {
-        Console.WriteLine(@event.Message);
-        return Task.CompletedTask;
-    }
-
-    public Task CommitAsync(MyEvent @event, CancellationToken cancellationToken) =>
-        Task.CompletedTask;
-
-    public Task RollbackAsync(MyEvent @event, CancellationToken cancellationToken) =>
-        Task.CompletedTask;
-}
-```
-
 #### Publishing Events
 
 ```csharp

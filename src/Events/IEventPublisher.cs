@@ -63,20 +63,10 @@ namespace EasyRequestHandlers.Events
 
                 var handlers = scope.ServiceProvider.GetServices<IEventHandler<TEvent>>().ToArray();
 
-                var nonTransactionalHandlers = handlers.Where(a => !(a is ITransactionalEventHandler<TEvent>)).ToArray();
-
-                var transactionalHandlers = handlers.Where(a => a is ITransactionalEventHandler<TEvent>).Select(a => a as ITransactionalEventHandler<TEvent>).OrderBy(a => a.Order).ToArray();
-
-                if (nonTransactionalHandlers.Length > 0)
+                if (handlers.Length > 0)
                 {
-                    await HandleNonTransactionalEvents(@event, nonTransactionalHandlers, useParallelExecution, cancellationToken);
+                    await HandleEventsAsync(@event, handlers, useParallelExecution, cancellationToken);
                 }
-
-                if (transactionalHandlers.Length > 0)
-                {
-                    await HandleTransactionalEvents(@event, transactionalHandlers, cancellationToken);
-                }
-
             }
             catch (Exception ex)
             {
@@ -84,7 +74,7 @@ namespace EasyRequestHandlers.Events
             }
         }
 
-        private async Task HandleNonTransactionalEvents<TEvent>(TEvent @event, IReadOnlyList<IEventHandler<TEvent>> handlers, bool useParallelExecution, CancellationToken cancellationToken = default) where TEvent : class
+        private async Task HandleEventsAsync<TEvent>(TEvent @event, IReadOnlyList<IEventHandler<TEvent>> handlers, bool useParallelExecution, CancellationToken cancellationToken = default) where TEvent : class
         {
             var tasks = new List<Task>();
 
@@ -121,38 +111,6 @@ namespace EasyRequestHandlers.Events
                         }
                     }
                 }).ConfigureAwait(false);
-            }
-        }
-
-        private async Task HandleTransactionalEvents<TEvent>(TEvent @event, IReadOnlyList<ITransactionalEventHandler<TEvent>> handlers, CancellationToken cancellationToken = default) where TEvent : class
-        {
-            var executedTransactionalHandlers = new Stack<ITransactionalEventHandler<TEvent>>();
-
-            try
-            {
-                foreach (var handler in handlers)
-                {
-                    executedTransactionalHandlers.Push(handler);
-
-                    await handler.HandleAsync(@event, cancellationToken).ConfigureAwait(false);
-                }
-
-                while (executedTransactionalHandlers.Count > 0)
-                {
-                    var handler = executedTransactionalHandlers.Pop();
-
-                    await handler.CommitAsync(@event, cancellationToken).ConfigureAwait(false);
-                }
-            }
-            catch (Exception ex)
-            {
-
-                foreach (var handler in executedTransactionalHandlers.Reverse())
-                {
-                    await handler.RollbackAsync(@event, cancellationToken).ConfigureAwait(false);
-                }
-
-                _logger.LogError(ex, "An error occurred during event handling. All Handlers Rollback were executed.");
             }
         }
     }

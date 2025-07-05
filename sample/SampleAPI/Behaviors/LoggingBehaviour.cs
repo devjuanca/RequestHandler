@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 
-namespace SampleAPI.Behaviours;
+namespace SampleAPI.Behaviors;
 
-public class LoggingBehaviour<TRequest, TResponse>(ILogger<LoggingBehaviour<TRequest, TResponse>> logger) : IPipelineBehaviour<TRequest, TResponse>
+public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> logger) : IPipelineBehaviour<TRequest, TResponse>
 {
     public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
     {

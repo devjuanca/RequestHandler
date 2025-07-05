@@ -1,7 +1,7 @@
 ﻿
 using SampleAPI.Dtos;
 
-namespace SampleAPI.Behaviours;
+namespace SampleAPI.Behaviors;
 
 public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehaviour<TRequest, TResponse>
 {

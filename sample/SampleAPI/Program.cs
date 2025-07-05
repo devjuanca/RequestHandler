@@ -1,6 +1,5 @@
-using SampleAPI.Behaviours;
+using SampleAPI.Behaviors;
 using SampleAPI.Dtos;
-using SampleAPI.Events.CreateCityForcastEvent;
 using SampleAPI.Events.Notification;
 using SampleAPI.Handlers;
 using SampleAPI.Repository;
@@ -12,8 +11,8 @@ builder.Services.AddSingleton<WeatherForecastRepository>();
 builder.Services.AddEasyRequestHandlers(typeof(Program))
                 .WithMediatorPattern()
                 .WithBehaviours(
-                    typeof(LoggingBehaviour<,>),
-                    typeof(AuthenticationBehaviour<,>),
+                    typeof(LoggingBehavior<,>),
+                    typeof(AuthenticationBehavior<,>),
                     typeof(ValidationBehaviour<,>)
                     )
                 .WithRequestHooks()
@@ -28,12 +27,12 @@ app.UseHttpsRedirection();
 
 //REQUEST HANDLERS
 
-app.MapGet("/weatherforecast", async (CitiesForcastHandler handler, CancellationToken cancellationToken) =>
+app.MapGet("/weather-forecast", async (CitiesForcastHandler handler, CancellationToken cancellationToken) =>
 {
     return await handler.HandleAsync(cancellationToken);
 });
 
-app.MapGet("/weatherforecast/{city}", async (string city, ISender sender, CancellationToken cancellationToken) =>
+app.MapGet("/weather-forecast/{city}", async (string city, ISender sender, CancellationToken cancellationToken) =>
 {
     var result = await sender.SendAsync<string, WeatherForecast?>(city, cancellationToken: cancellationToken);
 
@@ -44,17 +43,13 @@ app.MapGet("/weatherforecast/{city}", async (string city, ISender sender, Cancel
     };
 });
 
-app.MapPost("/weatherforecast", async (CreateCityForecastCommand command, ISender sender, IEventPublisher publisher, CancellationToken cancellationToken) =>
+app.MapPost("/weather-forecast", async (CreateCityForecastCommand command, ISender sender, CancellationToken cancellationToken) =>
 {
     await sender.SendAsync<CreateCityForecastCommand, Empty>(command, cancellationToken);
 
-    await publisher.PublishAsync(new CreateCityForcastEvent
-    {
-        City = command.City
-    }, cancellationToken: cancellationToken);
-
-    return Results.StatusCode(201);
+    return Results.NoContent();
 });
+
 
 // EVENTS HANDLER
 
