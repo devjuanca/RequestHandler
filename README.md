@@ -6,7 +6,7 @@
 
 - **Mediator Pattern**: Centralizes request handling with support for request pre/post hooks and behaviors (middleware).
 - **Flexible Request Handling**: Use `RequestHandler<TRequest, TResponse>` or `RequestHandler<TResponse>` base classes.
-- **Event Dispatching**: Handle and publish events using `IEventHandler<TEvent>` and `ITransactionalEventHandler<TEvent>`.
+- **Event Dispatching**: Handle and publish events using `IEventHandler<TEvent>`.
 - **Automatic Registration**: Register all handlers with a single method using `IServiceCollection` extensions.
 - **Scoped Lifetimes**: Control handler lifetimes using the `HandlerLifetimeAttribute`.
 - **Async/Await Support**: Built from the ground up for asynchronous code.
