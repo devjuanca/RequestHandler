@@ -102,27 +102,23 @@ namespace EasyRequestHandlers.Request
 
                 var baseType = handler.BaseType;
 
-                var lifetimeAttribute = handler.GetCustomAttribute<HandlerLifetimeAttribute>();
-
-                var lifetime = lifetimeAttribute?.Lifetime ?? ServiceLifetime.Transient;
-
                 if (options.EnableMediatorPattern)
                 {
                     if (baseType?.IsGenericType == true && baseType.GetGenericTypeDefinition() == typeof(RequestHandler<,>))
                     {
-                        services.Add(new ServiceDescriptor(baseType, handler, lifetime));
+                        services.Add(new ServiceDescriptor(baseType, handler, ServiceLifetime.Scoped));
                     }
                 }
 
                 if (options.EnableHandlerInjection)
                 {
-                    services.Add(new ServiceDescriptor(handler, handler, lifetime));
+                    services.Add(new ServiceDescriptor(handler, handler, ServiceLifetime.Scoped));
                 }
             }
 
             if (options.EnableMediatorPattern)
             {
-                services.AddScoped<ISender, Sender>();
+                services.AddSingleton<ISender, Sender>();
             }
 
             services.AddSingleton(options);

@@ -8,9 +8,6 @@
 - **Flexible Request Handling**: Use `RequestHandler<TRequest, TResponse>` or `RequestHandler<TResponse>` base classes.
 - **Event Dispatching**: Handle and publish events using `IEventHandler<TEvent>`.
 - **Automatic Registration**: Register all handlers with a single method using `IServiceCollection` extensions.
-- **Scoped Lifetimes**: Control handler lifetimes using the `HandlerLifetimeAttribute`.
-- **Async/Await Support**: Built from the ground up for asynchronous code.
-- **Built-in Logging**: Plug-and-play support for structured logging and error tracking.
 
 ## 📦 Installation
 
