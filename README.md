@@ -124,9 +124,10 @@ public class LoggingBehaviour<TRequest, TResponse> : IPipelineBehaviour<TRequest
 
 ##### Request Hooks
 
-Use hooks to add pre/post execution logic:
+The library now supports three different types of hooks to provide more flexibility in your request processing pipeline:
 
 ```csharp
+// Complete hook (both pre and post execution)
 public class MyRequestHook : IRequestHook<MyRequest, MyResponse>
 {
     public Task OnExecutingAsync(MyRequest request, CancellationToken cancellationToken)
@@ -138,6 +139,28 @@ public class MyRequestHook : IRequestHook<MyRequest, MyResponse>
     public Task OnExecutedAsync(MyRequest request, MyResponse response, CancellationToken cancellationToken)
     {
         Console.WriteLine("After handling request");
+        return Task.CompletedTask;
+    }
+}
+
+// Pre-execution only hook
+public class MyRequestPreHook : IRequestPreHook<MyRequest>
+{
+    public Task OnExecutingAsync(MyRequest request, CancellationToken cancellationToken)
+    {
+        Console.WriteLine("Pre-hook executing");
+        // You can modify request properties here
+        return Task.CompletedTask;
+    }
+}
+
+// Post-execution only hook
+public class MyRequestPostHook : IRequestPostHook<MyRequest, MyResponse>
+{
+    public Task OnExecutedAsync(MyRequest request, MyResponse response, CancellationToken cancellationToken)
+    {
+        Console.WriteLine("Post-hook executed");
+        // You can work with both request and response here
         return Task.CompletedTask;
     }
 }

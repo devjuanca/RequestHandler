@@ -36,51 +36,51 @@ namespace EasyRequestHandlers.Request
             return this;
         }
 
-        public RequestHandlerBuilder WithBehaviour(Type openGenericBehaviour)
+        public RequestHandlerBuilder WithBehavior(Type openGenericBehavior)
         {
             if (!_options.EnableMediatorPattern)
             {
                 return this;
             }
 
-            if (!openGenericBehaviour.IsGenericTypeDefinition)
+            if (!openGenericBehavior.IsGenericTypeDefinition)
                 throw new ArgumentException("Type must be an open generic like typeof(MyBehaviour<,>)");
 
-            var implementsInterface = openGenericBehaviour.GetInterfaces()
+            var implementsInterface = openGenericBehavior.GetInterfaces()
                 .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IPipelineBehaviour<,>));
 
             if (!implementsInterface)
-                throw new ArgumentException($"Type {openGenericBehaviour.Name} must implement IPipelineBehaviour<,>");
+                throw new ArgumentException($"Type {openGenericBehavior.Name} must implement IPipelineBehaviour<,>");
 
             _services.TryAddEnumerable(
-                ServiceDescriptor.Transient(typeof(IPipelineBehaviour<,>), openGenericBehaviour));
+                ServiceDescriptor.Transient(typeof(IPipelineBehaviour<,>), openGenericBehavior));
 
             return this;
         }
 
-        public RequestHandlerBuilder WithBehaviours(params Type[] behaviourTypes)
+        public RequestHandlerBuilder WithBehaviors(params Type[] behaviorTypes)
         {
             if (!_options.EnableMediatorPattern)
             {
                 return this;
             }
 
-            foreach (var behaviourType in behaviourTypes)
+            foreach (var behaviorType in behaviorTypes)
             {
-                if (!behaviourType.IsGenericTypeDefinition || behaviourType.GetGenericTypeDefinition() != behaviourType)
+                if (!behaviorType.IsGenericTypeDefinition || behaviorType.GetGenericTypeDefinition() != behaviorType)
                 {
-                    throw new ArgumentException($"Behaviour type {behaviourType.Name} must be an open generic type, e.g. LoggingBehaviour<,>");
+                    throw new ArgumentException($"Behaviour type {behaviorType.Name} must be an open generic type, e.g. LoggingBehaviour<,>");
                 }
 
-                var implementsInterface = behaviourType.GetInterfaces()
+                var implementsInterface = behaviorType.GetInterfaces()
                     .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IPipelineBehaviour<,>));
 
                 if (!implementsInterface)
                 {
-                    throw new ArgumentException($"Type {behaviourType.Name} must implement IPipelineBehaviour<,>");
+                    throw new ArgumentException($"Type {behaviorType.Name} must implement IPipelineBehaviour<,>");
                 }
 
-                _services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IPipelineBehaviour<,>), behaviourType));
+                _services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IPipelineBehaviour<,>), behaviorType));
             }
 
             return this;

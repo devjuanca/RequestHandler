@@ -52,6 +52,14 @@ namespace EasyRequestHandlers.Request
                             !x.IsInterface &&
                             x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestHook<,>))).ToList();
 
+                    var preHookTypes = assembly.GetTypes().Where(x => !x.IsAbstract &&
+                            !x.IsInterface &&
+                            x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestPreHook<>))).ToList();
+
+                    var postHookTypes = assembly.GetTypes().Where(x => !x.IsAbstract && 
+                            !x.IsInterface &&
+                            x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestPostHook<,>))).ToList();
+
                     foreach (var hookType in hookTypes)
                     {
                         var interfaces = hookType.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestHook<,>));
@@ -59,6 +67,24 @@ namespace EasyRequestHandlers.Request
                         foreach (var hookInterface in interfaces)
                         {
                             services.AddTransient(hookInterface, hookType);
+                        }
+                    }
+
+                    foreach (var preHookType in preHookTypes)
+                    {
+                        var interfaces = preHookType.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestPreHook<>));
+                        foreach (var preHookInterface in interfaces)
+                        {
+                            services.AddTransient(preHookInterface, preHookType);
+                        }
+                    }
+
+                    foreach (var postHookType in postHookTypes)
+                    {
+                        var interfaces = postHookType.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestPostHook<,>));
+                        foreach (var postHookInterface in interfaces)
+                        {
+                            services.AddTransient(postHookInterface, postHookType);
                         }
                     }
                 }

@@ -10,7 +10,7 @@ builder.Services.AddSingleton<WeatherForecastRepository>();
 
 builder.Services.AddEasyRequestHandlers(typeof(Program))
                 .WithMediatorPattern()
-                .WithBehaviours(
+                .WithBehaviors(
                     typeof(LoggingBehavior<,>),
                     typeof(AuthenticationBehavior<,>),
                     typeof(ValidationBehaviour<,>)

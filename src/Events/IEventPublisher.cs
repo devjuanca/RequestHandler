@@ -57,21 +57,17 @@ namespace EasyRequestHandlers.Events
         /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task PublishAsync<TEvent>(TEvent @event, bool useParallelExecution = false, CancellationToken cancellationToken = default) where TEvent : class
         {
-            try
-            {
-                using var scope = _scopeFactory.CreateScope();
+            using var scope = _scopeFactory.CreateScope();
 
-                var handlers = scope.ServiceProvider.GetServices<IEventHandler<TEvent>>().ToArray();
+            var handlers = scope.ServiceProvider.GetServices<IEventHandler<TEvent>>().ToArray();
 
-                if (handlers.Length > 0)
-                {
-                    await HandleEventsAsync(@event, handlers, useParallelExecution, cancellationToken);
-                }
-            }
-            catch (Exception ex)
+            if (handlers.Length == 0)
             {
-                _logger.LogError(ex, "Some exception was catched");
+                return;
             }
+            
+            await HandleEventsAsync(@event, handlers, useParallelExecution, cancellationToken);
+            
         }
 
         private async Task HandleEventsAsync<TEvent>(TEvent @event, IReadOnlyList<IEventHandler<TEvent>> handlers, bool useParallelExecution, CancellationToken cancellationToken = default) where TEvent : class
@@ -95,22 +91,31 @@ namespace EasyRequestHandlers.Events
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "An error occurred while executing an event handler.");
+                        throw;
                     }
                 }
             }
 
             if (tasks.Count > 0)
             {
-                await Task.WhenAll(tasks).ContinueWith(t =>
+                try
                 {
-                    if (t.Exception != null)
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
+                }
+                catch
+                {
+                    var failedTasks = tasks.Where(t => t.IsFaulted);
+
+                    foreach (var task in failedTasks)
                     {
-                        foreach (var ex in t.Exception.InnerExceptions)
+                        foreach (var ex in task.Exception!.InnerExceptions)
                         {
-                            _logger.LogError(ex, "An error ocurred while executing an event handler");
+                            _logger.LogError(ex, "An error occurred in an event handler.");
                         }
                     }
-                }).ConfigureAwait(false);
+
+                    throw;
+                }
             }
         }
     }

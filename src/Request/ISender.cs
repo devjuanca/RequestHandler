@@ -42,28 +42,58 @@ namespace EasyRequestHandlers.Request
 
             IReadOnlyList<IRequestHook<TRequest, TResponse>> hooks = null;
 
+            IReadOnlyList<IRequestPreHook<TRequest>> preHooks = null;
+
+            IReadOnlyList<IRequestPostHook<TRequest,TResponse>> postHooks = null;
+
             if (_options.EnableRequestHooks)
             {
                 hooks = _serviceProvider.GetServices<IRequestHook<TRequest, TResponse>>().ToArray();
+
+                preHooks = _serviceProvider.GetServices<IRequestPreHook<TRequest>>().ToArray();
+
+                postHooks = _serviceProvider.GetServices<IRequestPostHook<TRequest, TResponse>>().ToArray();
             }
 
             RequestHandlerDelegate<TResponse> handlerDelegate = async () =>
             {
-                if (_options.EnableRequestHooks && hooks.Count > 0)
+                if (_options.EnableRequestHooks)
                 {
-                    foreach (var hook in hooks)
+                    if (preHooks.Count > 0)
                     {
-                        await hook.OnExecutingAsync(request, cancellationToken);
+                        foreach (var preHook in preHooks)
+                        {
+                            await preHook.OnExecutingAsync(request, cancellationToken);
+                        }
+                    }
+
+                    if (hooks.Count > 0)
+                    {
+                        foreach (var hook in hooks)
+                        {
+                            await hook.OnExecutingAsync(request, cancellationToken);
+                        }
                     }
                 }
 
                 var response = await handler.HandleAsync(request, cancellationToken);
 
-                if (_options.EnableRequestHooks && hooks.Count > 0)
+                if (_options.EnableRequestHooks)
                 {
-                    foreach (var hook in hooks)
+                    if (postHooks.Count > 0)
                     {
-                        await hook.OnExecutedAsync(request, response, cancellationToken);
+                        foreach (var postHook in postHooks)
+                        {
+                            await postHook.OnExecutedAsync(request, response, cancellationToken);
+                        }
+                    }
+
+                    if (hooks.Count > 0)
+                    {
+                        foreach (var hook in hooks)
+                        {
+                            await hook.OnExecutedAsync(request, response, cancellationToken);
+                        }
                     }
                 }
 
