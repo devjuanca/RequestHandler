@@ -8,15 +8,18 @@ namespace Benchmarks.Scenarios.ComplexRequest;
 public class ComplexResponse
 {
     public string ProcessedData { get; set; } = string.Empty;
+
     public DateTime ProcessedTime { get; set; }
-    public List<string> Tags { get; set; } = new();
+
+    public List<string> Tags { get; set; } = [];
 }
 
 // MediatR implementations
 public class MediatRComplexRequest : IRequest<ComplexResponse>
 {
     public string Data { get; set; } = string.Empty;
-    public Dictionary<string, string> Metadata { get; set; } = new();
+
+    public Dictionary<string, string> Metadata { get; set; } = [];
 }
 
 public class MediatRComplexRequestHandler : IRequestHandler<MediatRComplexRequest, ComplexResponse>
@@ -34,6 +37,7 @@ public class MediatRComplexRequestHandler : IRequestHandler<MediatRComplexReques
         
         // Simulate work
         var processedData = request.Data.ToUpperInvariant();
+
         var tags = request.Metadata.Values.ToList();
         
         var response = new ComplexResponse
@@ -51,7 +55,8 @@ public class MediatRComplexRequestHandler : IRequestHandler<MediatRComplexReques
 public class EasyComplexRequest
 {
     public string Data { get; set; } = string.Empty;
-    public Dictionary<string, string> Metadata { get; set; } = new();
+
+    public Dictionary<string, string> Metadata { get; set; } = [];
 }
 
 public class EasyComplexRequestHandler : RequestHandler<EasyComplexRequest, ComplexResponse>
@@ -69,6 +74,7 @@ public class EasyComplexRequestHandler : RequestHandler<EasyComplexRequest, Comp
         
         // Simulate work
         var processedData = request.Data.ToUpperInvariant();
+
         var tags = request.Metadata.Values.ToList();
         
         var response = new ComplexResponse

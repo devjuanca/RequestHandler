@@ -130,12 +130,97 @@ namespace EasyRequestHandlers.Request
         {
             var handler = _serviceProvider.GetRequiredService<RequestHandler<TResponse>>();
 
-            return handler.HandleAsync(cancellationToken);
+            var behaviors = _serviceProvider.GetServices<IPipelineBehaviour<EmptyRequest, TResponse>>().ToArray();
+
+            IRequestHook<EmptyRequest, TResponse>[] hooks;
+
+            IRequestPreHook<EmptyRequest>[] preHooks;
+
+            IRequestPostHook<EmptyRequest, TResponse>[] postHooks;
+
+            if (_options.EnableRequestHooks)
+            {
+                hooks = _serviceProvider.GetServices<IRequestHook<EmptyRequest, TResponse>>().ToArray();
+                preHooks = _serviceProvider.GetServices<IRequestPreHook<EmptyRequest>>().ToArray();
+                postHooks = _serviceProvider.GetServices<IRequestPostHook<EmptyRequest, TResponse>>().ToArray();
+            }
+            else
+            {
+                hooks = Array.Empty<IRequestHook<EmptyRequest, TResponse>>();
+                preHooks = Array.Empty<IRequestPreHook<EmptyRequest>>();
+                postHooks = Array.Empty<IRequestPostHook<EmptyRequest, TResponse>>();
+            }
+
+            if (behaviors.Length == 0 && hooks.Length == 0 && preHooks.Length == 0 && postHooks.Length == 0)
+            {
+                return handler.HandleAsync(cancellationToken);
+            }
+
+            // Create an empty request instance to pass through the pipeline
+            var emptyRequest = new EmptyRequest();
+
+            RequestHandlerDelegate<TResponse> handlerDelegate = async () =>
+            {
+                if (_options.EnableRequestHooks)
+                {
+                    if (preHooks.Length > 0)
+                    {
+                        for (int i = 0; i < preHooks.Length; i++)
+                        {
+                            await preHooks[i].OnExecutingAsync(emptyRequest, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+
+                    if (hooks.Length > 0)
+                    {
+                        for (int i = 0; i < hooks.Length; i++)
+                        {
+                            await hooks[i].OnExecutingAsync(emptyRequest, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+                }
+
+                var response = await handler.HandleAsync(cancellationToken).ConfigureAwait(false);
+
+                if (_options.EnableRequestHooks)
+                {
+                    if (postHooks.Length > 0)
+                    {
+                        for (int i = 0; i < postHooks.Length; i++)
+                        {
+                            await postHooks[i].OnExecutedAsync(emptyRequest, response, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+
+                    if (hooks.Length > 0)
+                    {
+                        for (int i = 0; i < hooks.Length; i++)
+                        {
+                            await hooks[i].OnExecutedAsync(emptyRequest, response, cancellationToken).ConfigureAwait(false);
+                        }
+                    }
+                }
+
+                return response;
+            };
+
+            if (behaviors.Length > 0)
+            {
+                for (int i = behaviors.Length - 1; i >= 0; i--)
+                {
+                    var next = handlerDelegate;
+                    var behavior = behaviors[i];
+                    handlerDelegate = () => behavior.Handle(emptyRequest, cancellationToken, next);
+                }
+            }
+
+            return handlerDelegate();
         }
 
         private object GetHandler(Type type)
         {
             var factory = _factoryCache.GetOrAdd(type, CreateFactory);
+
             return factory(_serviceProvider);
         }
 
@@ -156,6 +241,7 @@ namespace EasyRequestHandlers.Request
 
             return lambda.Compile();
         }
-
     }
+
 }
+

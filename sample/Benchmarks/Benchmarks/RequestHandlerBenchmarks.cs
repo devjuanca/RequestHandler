@@ -29,6 +29,7 @@ public class RequestHandlerBenchmarks
     {
         // Setup EasyRequestHandler
         var easyRequestServices = new ServiceCollection();
+
         // Add logging
         easyRequestServices.AddLogging(_ => { });
 
@@ -87,12 +88,14 @@ public class RequestHandlerBenchmarks
 
     // Simple request benchmarks (existing)
     [Benchmark(Baseline = true)]
+    [BenchmarkCategory("SimpleRequest")]
     public async Task<SimpleResponse> MediatR_SimpleRequest()
     {
         return await _mediator.Send(new MediatRSimpleRequest { Value = 42 });
     }
 
     [Benchmark]
+    [BenchmarkCategory("SimpleRequest")]
     public async Task<SimpleResponse> EasyRequestHandler_SimpleRequest()
     {
         return await _easyRequestSender.SendAsync<EasySimpleRequest, SimpleResponse>(new EasySimpleRequest { Value = 42 });
@@ -100,6 +103,7 @@ public class RequestHandlerBenchmarks
 
     // Direct handler injection
     [Benchmark]
+    [BenchmarkCategory("SimpleRequest")]
     public async Task<SimpleResponse> EasyRequestHandler_DirectInjection()
     {
         var handler = _easyDirectServiceProvider.GetRequiredService<EasySimpleRequestHandler>();
@@ -108,12 +112,14 @@ public class RequestHandlerBenchmarks
 
     // Complex request benchmarks (new)
     [Benchmark]
+    [BenchmarkCategory("ComplexRequest")]
     public async Task<ComplexResponse> MediatR_ComplexRequest()
     {
         return await _mediator.Send(_mediatRComplexRequest);
     }
 
     [Benchmark]
+    [BenchmarkCategory("ComplexRequest")]
     public async Task<ComplexResponse> EasyRequestHandler_ComplexRequest()
     {
         return await _easyRequestSender.SendAsync<EasyComplexRequest, ComplexResponse>(_easyComplexRequest);
@@ -121,6 +127,7 @@ public class RequestHandlerBenchmarks
 
     // Complex direct handler injection
     [Benchmark]
+    [BenchmarkCategory("ComplexRequest")]
     public async Task<ComplexResponse> EasyRequestHandler_ComplexDirectInjection()
     {
         var handler = _easyDirectServiceProvider.GetRequiredService<EasyComplexRequestHandler>();
@@ -129,6 +136,7 @@ public class RequestHandlerBenchmarks
 
     // DI benchmarks (existing)
     [Benchmark]
+    [BenchmarkCategory("DI")]
     public async Task<SimpleResponse> MediatR_WithDI()
     {
         using var scope = _mediatRServiceProvider.CreateScope();
@@ -137,6 +145,7 @@ public class RequestHandlerBenchmarks
     }
 
     [Benchmark]
+    [BenchmarkCategory("DI")]
     public async Task<SimpleResponse> EasyRequestHandler_WithDI()
     {
         using var scope = _easyRequestServiceProvider.CreateScope();
@@ -146,9 +155,11 @@ public class RequestHandlerBenchmarks
 
     // Load test benchmarks (existing)
     [Benchmark]
+    [BenchmarkCategory("LoadTest")]
     public async Task MediatR_LoadTest()
     {
         var tasks = new List<Task<SimpleResponse>>();
+
         for (int i = 0; i < 100; i++)
         {
             tasks.Add(_mediator.Send(new MediatRSimpleRequest { Value = i }));
@@ -157,9 +168,11 @@ public class RequestHandlerBenchmarks
     }
 
     [Benchmark]
+    [BenchmarkCategory("LoadTest")]
     public async Task EasyRequestHandler_LoadTest()
     {
         var tasks = new List<Task<SimpleResponse>>();
+
         for (int i = 0; i < 100; i++)
         {
             tasks.Add(_easyRequestSender.SendAsync<EasySimpleRequest, SimpleResponse>(new EasySimpleRequest { Value = i }));
@@ -169,9 +182,11 @@ public class RequestHandlerBenchmarks
 
     // Direct handler injection load test
     [Benchmark]
+    [BenchmarkCategory("LoadTest")]
     public async Task EasyRequestHandler_DirectLoadTest()
     {
         var tasks = new List<Task<SimpleResponse>>();
+
         for (int i = 0; i < 100; i++)
         {
             var handler = _easyDirectServiceProvider.GetRequiredService<EasySimpleRequestHandler>();
@@ -182,9 +197,11 @@ public class RequestHandlerBenchmarks
 
     // Complex load test benchmarks (new)
     [Benchmark]
+    [BenchmarkCategory("ComplexLoadTest")]
     public async Task MediatR_ComplexLoadTest()
     {
         var tasks = new List<Task<ComplexResponse>>();
+
         for (int i = 0; i < 50; i++)
         {
             var request = new MediatRComplexRequest
@@ -202,9 +219,11 @@ public class RequestHandlerBenchmarks
     }
 
     [Benchmark]
+    [BenchmarkCategory("ComplexLoadTest")]
     public async Task EasyRequestHandler_ComplexLoadTest()
     {
         var tasks = new List<Task<ComplexResponse>>();
+
         for (int i = 0; i < 50; i++)
         {
             var request = new EasyComplexRequest
@@ -223,9 +242,11 @@ public class RequestHandlerBenchmarks
 
     // Complex direct handler injection load test
     [Benchmark]
+    [BenchmarkCategory("ComplexLoadTest")]
     public async Task EasyRequestHandler_ComplexDirectLoadTest()
     {
         var tasks = new List<Task<ComplexResponse>>();
+
         for (int i = 0; i < 50; i++)
         {
             var handler = _easyDirectServiceProvider.GetRequiredService<EasyComplexRequestHandler>();

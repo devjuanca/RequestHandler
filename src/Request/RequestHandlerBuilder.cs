@@ -29,13 +29,6 @@ namespace EasyRequestHandlers.Request
             return this;
         }
 
-        public RequestHandlerBuilder RemoveHandlerInjection()
-        {
-            _options.EnableHandlerInjection = false;
-
-            return this;
-        }
-
         public RequestHandlerBuilder WithBehavior(Type openGenericBehavior)
         {
             if (!_options.EnableMediatorPattern)
@@ -44,13 +37,13 @@ namespace EasyRequestHandlers.Request
             }
 
             if (!openGenericBehavior.IsGenericTypeDefinition)
-                throw new ArgumentException("Type must be an open generic like typeof(MyBehaviour<,>)");
+                throw new ArgumentException("Type must be an open generic like typeof(MyBehavior<,>)");
 
             var implementsInterface = openGenericBehavior.GetInterfaces()
                 .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IPipelineBehaviour<,>));
 
             if (!implementsInterface)
-                throw new ArgumentException($"Type {openGenericBehavior.Name} must implement IPipelineBehaviour<,>");
+                throw new ArgumentException($"Type {openGenericBehavior.Name} must implement IPipelineBehavior<,>");
 
             _services.TryAddEnumerable(
                 ServiceDescriptor.Transient(typeof(IPipelineBehaviour<,>), openGenericBehavior));
@@ -69,7 +62,7 @@ namespace EasyRequestHandlers.Request
             {
                 if (!behaviorType.IsGenericTypeDefinition || behaviorType.GetGenericTypeDefinition() != behaviorType)
                 {
-                    throw new ArgumentException($"Behaviour type {behaviorType.Name} must be an open generic type, e.g. LoggingBehaviour<,>");
+                    throw new ArgumentException($"Behavior type {behaviorType.Name} must be an open generic type, e.g. LoggingBehavior<,>");
                 }
 
                 var implementsInterface = behaviorType.GetInterfaces()
@@ -77,7 +70,7 @@ namespace EasyRequestHandlers.Request
 
                 if (!implementsInterface)
                 {
-                    throw new ArgumentException($"Type {behaviorType.Name} must implement IPipelineBehaviour<,>");
+                    throw new ArgumentException($"Type {behaviorType.Name} must implement IPipelineBehavior<,>");
                 }
 
                 _services.TryAddEnumerable(ServiceDescriptor.Transient(typeof(IPipelineBehaviour<,>), behaviorType));

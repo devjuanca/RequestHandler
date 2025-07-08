@@ -1,5 +1,6 @@
 ﻿using EasyRequestHandlers.Common;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,7 +67,7 @@ namespace EasyRequestHandlers.Request
 
                         foreach (var hookInterface in interfaces)
                         {
-                            services.AddTransient(hookInterface, hookType);
+                            services.TryAdd(new ServiceDescriptor(hookInterface, hookType, ServiceLifetime.Transient));
                         }
                     }
 
@@ -75,7 +76,7 @@ namespace EasyRequestHandlers.Request
                         var interfaces = preHookType.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestPreHook<>));
                         foreach (var preHookInterface in interfaces)
                         {
-                            services.AddTransient(preHookInterface, preHookType);
+                            services.TryAdd(new ServiceDescriptor(preHookInterface, preHookType, ServiceLifetime.Transient));
                         }
                     }
 
@@ -84,7 +85,7 @@ namespace EasyRequestHandlers.Request
                         var interfaces = postHookType.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IRequestPostHook<,>));
                         foreach (var postHookInterface in interfaces)
                         {
-                            services.AddTransient(postHookInterface, postHookType);
+                            services.TryAdd(new ServiceDescriptor(postHookInterface, postHookType, ServiceLifetime.Transient));
                         }
                     }
                 }
@@ -104,21 +105,29 @@ namespace EasyRequestHandlers.Request
 
                 if (options.EnableMediatorPattern)
                 {
-                    if (baseType?.IsGenericType == true && baseType.GetGenericTypeDefinition() == typeof(RequestHandler<,>))
+                    if (baseType?.IsGenericType == true)
                     {
-                        services.Add(new ServiceDescriptor(baseType, handler, ServiceLifetime.Scoped));
+                        var genericTypeDef = baseType.GetGenericTypeDefinition();
+                        
+                        // Register for RequestHandler<TRequest, TResponse>
+                        if (genericTypeDef == typeof(RequestHandler<,>))
+                        {
+                            services.TryAdd(new ServiceDescriptor(baseType, handler, ServiceLifetime.Scoped));
+                        }
+                        // Register for RequestHandler<TResponse> (no-input handlers)
+                        else if (genericTypeDef == typeof(RequestHandler<>))
+                        {
+                            services.TryAdd(new ServiceDescriptor(baseType, handler, ServiceLifetime.Scoped));
+                        }
                     }
                 }
-
-                if (options.EnableHandlerInjection)
-                {
-                    services.Add(new ServiceDescriptor(handler, handler, ServiceLifetime.Scoped));
-                }
+                
+                services.TryAdd(new ServiceDescriptor(handler, handler, ServiceLifetime.Scoped));             
             }
 
             if (options.EnableMediatorPattern)
             {
-                services.AddSingleton<ISender, Sender>();
+                services.TryAdd(new ServiceDescriptor(typeof(ISender), typeof(Sender), ServiceLifetime.Scoped));
             }
 
             services.AddSingleton(options);

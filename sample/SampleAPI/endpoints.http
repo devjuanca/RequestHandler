@@ -12,7 +12,7 @@ POST {{SampleAPI_HostAddress}}/weather-forecast
 Content-Type: application/json
 
 {
-  "city": "Berlin  ",
+  "city": "Berlin",
   "weatherForecast":{
     "Date": "2024-08-30",
     "TemperatureC": -10,
